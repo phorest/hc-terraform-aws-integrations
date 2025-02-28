@@ -7,7 +7,7 @@ locals {
   is_aurora               = trimprefix(var.db_engine, "aurora") != var.db_engine // startswith() only available in TF >=1.3
   log_group_prefix        = local.is_aurora ? "aws/rds/cluster" : "aws/rds/instance"
   log_groups              = [for log_type in var.db_log_types : "/${local.log_group_prefix}/${var.db_name}/${log_type}"]
-  enable_lambda_transform = var.db_engine == "mysql" || var.db_engine == "postgresql"
+  enable_lambda_transform = local.is_aurora || var.db_engine == "mysql" || var.db_engine == "postgresql"
   tags = merge(var.tags, {
     "Honeycomb Agentless" = true,
     "Terraform"           = true,
